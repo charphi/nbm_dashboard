@@ -23,7 +23,7 @@ jobs:
           - 'nbbrd/jdplus-sdmx'
         version: [ 3.2.4, 3.3.0, 3.4.0, 3.4.1-SNAPSHOT ]
 
-    name: ${{matrix.plugin}}/${{matrix.version}}
+    name: ${{matrix.plugin}}@${{matrix.version}}
     runs-on: ubuntu-latest
 
     steps:
@@ -32,7 +32,7 @@ jobs:
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
-          java-version: 21
+          java-version: 17
 
       - name: Checkout plugin
         run: git clone https://github.com/${{matrix.plugin}} plugin -b main --single-branch
