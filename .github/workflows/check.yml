@@ -37,6 +37,9 @@ jobs:
       - name: Checkout plugin
         run: git clone https://github.com/${{matrix.plugin}} plugin -b main --single-branch
 
+      - name: Output plugin version
+        run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout >> $GITHUB_STEP_SUMMARY
+
       - name: Set JD+ version
         run: mvn -f plugin/pom.xml versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
 
