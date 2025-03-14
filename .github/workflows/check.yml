@@ -1,0 +1,37 @@
+name: Check main on JD+ develop
+
+on:
+  workflow_dispatch:
+
+env:
+  MAVEN_ARGS: "-B -ntp"
+
+jobs:
+  check-main-job:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ 21 ]
+        os:
+          - ubuntu-latest     # Linux x64
+
+    name: JDK${{ matrix.java }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.java }}
+          cache: 'maven'
+
+      - name: Checkout and compile jdplus-main
+        run: | 
+          git clone https://github.com/jdemetra/jdplus-main
+          mvn clean install -DskipTests -f jdplus-main/pom.xml
+
+      - name: Checkout and compile jdplus-incubator
+        run: | 
+          git clone https://github.com/jdemetra/jdplus-incubator -b main --single-branch
+          mvn clean install -DskipTests -f jdplus-incubator/pom.xml
