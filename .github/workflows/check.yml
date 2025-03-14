@@ -17,7 +17,7 @@ jobs:
         version: [ 3.3.0, 3.4.0, 3.4.1-SNAPSHOT ]
         plugin: [ jdplus-incubator, jdplus-benchmarking ]
 
-    name: Check plugin ${{matrix.plugin}} on JD+ ${{matrix.version}}
+    name: ${{matrix.plugin}}/${{matrix.version}}
     runs-on: ubuntu-latest
 
     steps:
