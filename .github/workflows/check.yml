@@ -32,9 +32,10 @@ jobs:
       - name: Checkout and compile jdplus-main
         run: | 
           git clone https://github.com/jdemetra/jdplus-main
-          mvn clean install -DskipTests -f jdplus-main/pom.xml
+          mvn clean install -DskipTests -f jdplus-main/pom.xml -T1C
 
       - name: Checkout and compile jdplus-incubator
         run: | 
           git clone https://github.com/jdemetra/jdplus-incubator -b main --single-branch
-          mvn clean install -DskipTests -f jdplus-incubator/pom.xml
+          mvn versions:set-property -f jdplus-incubator/pom.xml -Dproperty=jdplus-main.version -DnewVersion=3.4.1-SNAPSHOT
+          mvn clean install -DskipTests -f jdplus-incubator/pom.xml -T1C
