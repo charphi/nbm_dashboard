@@ -34,8 +34,11 @@ jobs:
           checkout-fetch-depth: 0
           java-version: 21
 
-      - name: Checkout and compile
-        run: | 
-          git clone https://github.com/${{matrix.plugin}} plugin -b main --single-branch
-          mvn versions:set-property -f plugin/pom.xml -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
-          mvn clean install -DskipTests -Denforcer.skip -f plugin/pom.xml
+      - name: Checkout plugin
+        run: git clone https://github.com/${{matrix.plugin}} plugin -b main --single-branch
+
+      - name: Set JD+ version
+        run: mvn -f plugin/pom.xml versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
+
+      - name: Compile
+        run: mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
