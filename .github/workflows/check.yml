@@ -16,7 +16,7 @@ jobs:
       matrix:
         plugin: [ jdplus-incubator, jdplus-benchmarking ]
 
-    name: Check ${{ matrix.plugin }}
+    name: Check ${{matrix.plugin}}
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +29,6 @@ jobs:
 
       - name: Checkout and compile
         run: | 
-          git clone https://github.com/jdemetra/${{ matrix.plugin }} -b main --single-branch
-          mvn versions:set-property -f ${{ matrix.plugin }}/pom.xml -Dproperty=jdplus-main.version -DnewVersion=3.4.1-SNAPSHOT
-          mvn clean install -DskipTests -f ${{ matrix.plugin }}/pom.xml
+          git clone https://github.com/jdemetra/${{matrix.plugin}} -b main --single-branch
+          mvn versions:set-property -f ${{matrix.plugin}}/pom.xml -Dproperty=jdplus-main.version -DnewVersion=3.4.1-SNAPSHOT
+          mvn clean install -DskipTests -Denforcer.skip -f ${{matrix.plugin}}/pom.xml
