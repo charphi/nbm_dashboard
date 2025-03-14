@@ -14,8 +14,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        plugin:
+          - 'jdemetra/jdplus-benchmarking'
+          - 'jdemetra/jdplus-incubator'
+          - 'jdemetra/jdplus-experimental'
+          - 'jdemetra/jdplus-revisions'
+          - 'jdemetra/jdplus-nowcasting'
+          - 'nbbrd/jdplus-sdmx'
         version: [ 3.3.0, 3.4.0, 3.4.1-SNAPSHOT ]
-        plugin: [ jdplus-incubator, jdplus-benchmarking ]
 
     name: ${{matrix.plugin}}/${{matrix.version}}
     runs-on: ubuntu-latest
@@ -30,6 +36,6 @@ jobs:
 
       - name: Checkout and compile
         run: | 
-          git clone https://github.com/jdemetra/${{matrix.plugin}} plugin -b main --single-branch
+          git clone https://github.com/${{matrix.plugin}} plugin -b main --single-branch
           mvn versions:set-property -f plugin/pom.xml -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
           mvn clean install -DskipTests -Denforcer.skip -f plugin/pom.xml
