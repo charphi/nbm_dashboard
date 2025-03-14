@@ -2,6 +2,9 @@ name: Check main on JD+ develop
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 env:
   MAVEN_ARGS: "-B -ntp"
