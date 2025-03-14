@@ -22,12 +22,12 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Checkout and Setup Maven
+        uses: s4u/setup-maven-action@v1.18.0
         with:
-          distribution: 'zulu'
+          checkout-submodules: true
+          checkout-fetch-depth: 0
           java-version: ${{ matrix.java }}
-          cache: 'maven'
 
       - name: Checkout and compile jdplus-main
         run: | 
