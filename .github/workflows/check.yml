@@ -14,12 +14,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 21 ]
-        os:
-          - ubuntu-latest     # Linux x64
+        plugin: [ jdplus-incubator, jdplus-benchmarking ]
 
-    name: JDK${{ matrix.java }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Check {{ matrix.plugin }}
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout and Setup Maven
@@ -27,15 +25,10 @@ jobs:
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
-          java-version: ${{ matrix.java }}
+          java-version: 21
 
-      - name: Checkout and compile jdplus-main
+      - name: Checkout and compile
         run: | 
-          git clone https://github.com/jdemetra/jdplus-main
-          mvn clean install -DskipTests -f jdplus-main/pom.xml -T1C
-
-      - name: Checkout and compile jdplus-incubator
-        run: | 
-          git clone https://github.com/jdemetra/jdplus-incubator -b main --single-branch
-          mvn versions:set-property -f jdplus-incubator/pom.xml -Dproperty=jdplus-main.version -DnewVersion=3.4.1-SNAPSHOT
-          mvn clean install -DskipTests -f jdplus-incubator/pom.xml
+          git clone https://github.com/jdemetra/{{ matrix.plugin }} -b main --single-branch
+          mvn versions:set-property -f {{ matrix.plugin }}/pom.xml -Dproperty=jdplus-main.version -DnewVersion=3.4.1-SNAPSHOT
+          mvn clean install -DskipTests -f {{ matrix.plugin }}/pom.xml
