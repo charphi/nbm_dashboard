@@ -57,11 +57,11 @@ jobs:
       - name: Create JSON file
         run: echo "${{matrix.plugin}}_${{matrix.version}}" > data.json
       - name: Create artifact name
-        run: artifact_name=$(echo ${{matrix.plugin}}_${{matrix.version}} | tr "/" "_")
+        run: echo ::set-env name=artifact_name::$(echo ${{matrix.plugin}}_${{matrix.version}} | tr "/" "_")
       - name: Upload JSON artifact
         uses: actions/upload-artifact@v4
         with:
-          name: $artifact_name
+          name: ${{ env.artifact_name }}
           path: data.json
 
   gen-summary-job:
