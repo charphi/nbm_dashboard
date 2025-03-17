@@ -52,9 +52,10 @@ jobs:
         id: compilation
         run: |
           set +e
+          version=${{ matrix.version }}
           mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
 #          echo "exitcode=$?" >> $GITHUB_OUTPUT
-          echo "exitcode=${{ matrix.version }}" >> $GITHUB_OUTPUT
+          echo "exitcode=$version" >> $GITHUB_OUTPUT
 
   gen-summary-job:
     runs-on: ubuntu-latest
