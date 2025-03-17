@@ -57,7 +57,7 @@ jobs:
       - name: Create JSON file
         run: echo "${{matrix.plugin}}_${{matrix.version}}" > data.json
       - name: Create artifact name
-        run: echo ::set-env name=artifact_name::$(echo ${{matrix.plugin}}_${{matrix.version}} | tr "/" "_")
+        run: echo "artifact_name=$(echo ${{matrix.plugin}}_${{matrix.version}} | tr "/" "_")" >> $GITHUB_ENV
       - name: Upload JSON artifact
         uses: actions/upload-artifact@v4
         with:
