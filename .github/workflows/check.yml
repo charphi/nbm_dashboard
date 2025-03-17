@@ -37,14 +37,11 @@ jobs:
       - name: Checkout plugin
         run: git clone https://github.com/${{matrix.plugin}} plugin -b main --single-branch
 
-      - name: Output plugin version
-        run: mvn -f plugin/pom.xml  help:evaluate -Dexpression=project.version -q -DforceStdout >> $GITHUB_STEP_SUMMARY
-
-      - name: Output JD+ version
-        run: mvn -f plugin/pom.xml  help:evaluate -Dexpression=project.version -q -DforceStdout >> $GITHUB_STEP_SUMMARY
-
-      - name: Set JD+ version
-        run: mvn -f plugin/pom.xml versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
+      - name: Gather and configure versions
+        run: |
+          mvn -f plugin/pom.xml  help:evaluate -Dexpression=project.version -q -DforceStdout >> $plugin_version
+          mvn -f plugin/pom.xml  help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout >> $jdplus_version
+          mvn -f plugin/pom.xml versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
 
 #      - name: Compile
 #        id: compilation
@@ -54,12 +51,12 @@ jobs:
 #          mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
 #          echo "exitcode_$version=$version" >> $GITHUB_OUTPUT
 
-      - name: Create artifact name
-        run: echo "artifact_name=$(echo ${{matrix.plugin}}_${{matrix.version}} | tr "/" "_")" >> $GITHUB_ENV
-      - name: Create JSON file
+      - name: Create report
         run: |
-          echo '{"exitcode": 0, "plugin": ${{matrix.plugin}}, "matrix": ${{matrix.matrix}}}' > ${{ env.artifact_name }}.json
-      - name: Upload JSON artifact
+          echo "artifact_name=$(echo ${{matrix.plugin}}_${{matrix.version}} | tr "/" "_")" >> $GITHUB_ENV
+          echo '{"exitcode": 0, "plugin": "${{matrix.plugin}}", "version": "${{matrix.version}}", "plugin_version": "$plugin_version"}' > ${{ env.artifact_name }}.json
+
+      - name: Upload report
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.artifact_name }}
@@ -73,4 +70,4 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-      - run: ls -R
+      - run: echo $(jq -s *.json) >> $GITHUB_STEP_SUMMARY
