@@ -23,7 +23,7 @@ public class MakeTable {
         System.out.println("| | " + String.join(" | ", versions.keySet()) + " |");
         System.out.println("| " + IntStream.range(0, versions.size() + 1).mapToObj(i -> "---").collect(Collectors.joining(" | ")) + " |");
         plugins.forEach((plugin, items) -> {
-            System.out.print("| " + plugin);
+            System.out.print("| " + plugin + " " + items.stream().map(item -> item.plugin_version()).findFirst().orElse(""));
             versions.keySet().stream()
                     .map(version -> items.stream().filter(z -> z.version().equals(version)).findFirst().map(Item::exitcode).orElse(-1))
                     .map(MakeTable::emoji)
