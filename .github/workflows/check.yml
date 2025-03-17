@@ -51,9 +51,12 @@ jobs:
 #          mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
 #          echo "exitcode_$version=$version" >> $GITHUB_OUTPUT
 
-      - name: Create report
+      - name: Create artifact name
         run: |
           echo "artifact_name=$(echo ${{matrix.plugin}}_${{matrix.version}} | tr "/" "_")" >> $GITHUB_ENV
+
+      - name: Create report
+        run: |
           echo '{"exitcode": 0, "plugin": "${{matrix.plugin}}", "version": "${{matrix.version}}", "plugin_version": "$plugin_version"}' > ${{ env.artifact_name }}.json
 
       - name: Upload report
