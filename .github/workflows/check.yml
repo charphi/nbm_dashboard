@@ -26,7 +26,7 @@ jobs:
     name: ${{matrix.plugin}}@${{matrix.version}}
     runs-on: ubuntu-latest
     outputs:
-      exitcode: ${{ steps.compilation.outputs.exitcode_3.2.4 }}
+      exitcode: ${{ steps.check-main-job.outputs.exitcode }}
 
     steps:
       - name: Checkout and Setup Maven
@@ -54,7 +54,7 @@ jobs:
           version="${{ matrix.version }}"
           set +e
           mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
-          echo "exitcode_${version}=$?" >> $GITHUB_OUTPUT
+          echo "exitcode=$?" >> $GITHUB_OUTPUT
 
   gen-summary-job:
     runs-on: ubuntu-latest
