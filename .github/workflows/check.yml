@@ -57,7 +57,9 @@ jobs:
 
       - name: Create report
         run: |
-          echo '{"exitcode": 0, "plugin": "${{matrix.plugin}}", "version": "${{matrix.version}}", "plugin_version": "$plugin_version"}' > ${{ env.artifact_name }}.json
+          json=$(jq -n --arg p "${{matrix.plugin}}" --arg v "${{matrix.version}}" --arg pv "$plugin_version" '{exitcode: 0, plugin: $p, version: $v, plugin_version: $pv}')
+          echo $json > ${{ env.artifact_name }}.json
+          echo $json
 
       - name: Upload report
         uses: actions/upload-artifact@v4
