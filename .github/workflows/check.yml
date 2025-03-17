@@ -40,7 +40,7 @@ jobs:
       - name: Gather and configure versions
         run: |
           plugin_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=project.version -q -DforceStdout)
-          jdplus_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout >> $jdplus_version)
+          jdplus_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout)
           mvn -f plugin/pom.xml versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
 
 #      - name: Compile
