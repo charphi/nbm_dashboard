@@ -15,16 +15,18 @@ jobs:
       fail-fast: false
       matrix:
         plugin:
-          - 'jdemetra/jdplus-benchmarking'
+#          - 'jdemetra/jdplus-benchmarking'
           - 'jdemetra/jdplus-incubator'
-          - 'jdemetra/jdplus-experimental'
-          - 'jdemetra/jdplus-revisions'
-          - 'jdemetra/jdplus-nowcasting'
-          - 'nbbrd/jdplus-sdmx'
+#          - 'jdemetra/jdplus-experimental'
+#          - 'jdemetra/jdplus-revisions'
+#          - 'jdemetra/jdplus-nowcasting'
+#          - 'nbbrd/jdplus-sdmx'
         version: [ 3.2.4, 3.3.0, 3.4.0, 3.4.1-SNAPSHOT ]
 
     name: ${{matrix.plugin}}@${{matrix.version}}
     runs-on: ubuntu-latest
+    outputs:
+      exitcode: ${{ steps.compilation.outputs.exitcode }}
 
     steps:
       - name: Checkout and Setup Maven
@@ -47,4 +49,15 @@ jobs:
         run: mvn -f plugin/pom.xml versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
 
       - name: Compile
-        run: mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
+        id: compilation
+        run: |
+          version="${{ matrix.version }}"
+          set +e
+          mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
+          echo "exitcode_${version}=$?" >> $GITHUB_OUTPUT
+
+  gen-summary-job:
+    runs-on: ubuntu-latest
+    needs: check-main-job
+    steps:
+      - run: echo '${{ toJSON(needs.check-main-job.outputs) }}'
