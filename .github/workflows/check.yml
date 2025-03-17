@@ -54,15 +54,16 @@ jobs:
 #          mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
 #          echo "exitcode_$version=$version" >> $GITHUB_OUTPUT
 
-      - name: Create JSON file
-        run: echo "${{matrix.plugin}}_${{matrix.version}}" > data.json
       - name: Create artifact name
         run: echo "artifact_name=$(echo ${{matrix.plugin}}_${{matrix.version}} | tr "/" "_")" >> $GITHUB_ENV
+      - name: Create JSON file
+        run: |
+          echo '{"exitcode": 0, "plugin": ${{matrix.plugin}}, "matrix": ${{matrix.matrix}}}' > ${{ env.artifact_name }}.json
       - name: Upload JSON artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.artifact_name }}
-          path: data.json
+          path: ${{ env.artifact_name }}.json
 
   gen-summary-job:
     runs-on: ubuntu-latest
@@ -70,6 +71,6 @@ jobs:
     steps:
       - name: Download JSON artifact
         uses: actions/download-artifact@v4
-#        with:
-#          merge-multiple: true
+        with:
+          merge-multiple: true
       - run: ls -R
