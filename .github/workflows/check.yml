@@ -55,7 +55,7 @@ jobs:
 
       - name: Create report
         run: |
-          json=$(jq -n --arg e "${{env.exitcode}}" --arg p "${{matrix.plugin}}" --arg v "${{matrix.version}}" --arg pv "${{env.plugin_version}}" '{exitcode: 0, plugin: $p, version: $v, plugin_version: $pv}')
+          json=$(jq -n --arg e "${{env.exitcode}}" --arg p "${{matrix.plugin}}" --arg v "${{matrix.version}}" --arg pv "${{env.plugin_version}}" '{exitcode: $e, plugin: $p, version: $v, plugin_version: $pv}')
           echo $json > ${{ env.artifact_name }}.json
           echo $json
 
