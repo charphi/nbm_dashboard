@@ -59,7 +59,7 @@ jobs:
       - name: Upload JSON artifact
         uses: actions/upload-artifact@v4
         with:
-          name: json_data
+          name: json_data_${{matrix.plugin}}_${{matrix.version}}
           path: data.json
 
   gen-summary-job:
@@ -68,6 +68,4 @@ jobs:
     steps:
     - name: Download JSON artifact
       uses: actions/download-artifact@v4
-      with:
-        name: json_data
-    - run: cat data.json
+    - run: ls -l
