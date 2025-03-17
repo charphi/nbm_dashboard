@@ -26,7 +26,7 @@ jobs:
     name: ${{matrix.plugin}}@${{matrix.version}}
     runs-on: ubuntu-latest
     outputs:
-      exitcode: ${{ steps.compilation.outputs.exitcode }}
+      exitcode: ${{ steps.compilation.outputs.exitcode_3.2.4 }}
 
     steps:
       - name: Checkout and Setup Maven
