@@ -71,8 +71,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-main-job
     steps:
+      - name: Checkout and Setup Maven
+        uses: s4u/setup-maven-action@v1.18.0
+        with:
+          checkout-submodules: true
+          checkout-fetch-depth: 0
+          java-version: 17
+
       - name: Download JSON artifact
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-      - run: echo $(jq -s 'flatten' *.json) >> $GITHUB_STEP_SUMMARY
+
+      - run: echo $(jq -s 'flatten' *.json) > data.json
+
+      - name: Generate summary
+        run: mvn clean install
+
+      - run: java -jar target/nbm_dashboard-1.0.0-SNAPSHOT-bin.jar data.json > $GITHUB_STEP_SUMMARY
