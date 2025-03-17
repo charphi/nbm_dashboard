@@ -39,8 +39,8 @@ jobs:
 
       - name: Gather and configure versions
         run: |
-          plugin_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=project.version -q -DforceStdout)
-          jdplus_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout)
+          echo "plugin_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+          echo "jdplus_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout)" >> $GITHUB_ENV
           mvn -f plugin/pom.xml versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
 
 #      - name: Compile
@@ -57,7 +57,7 @@ jobs:
 
       - name: Create report
         run: |
-          json=$(jq -n --arg p "${{matrix.plugin}}" --arg v "${{matrix.version}}" --arg pv "$plugin_version" '{exitcode: 0, plugin: $p, version: $v, plugin_version: $pv}')
+          json=$(jq -n --arg p "${{matrix.plugin}}" --arg v "${{matrix.version}}" --arg pv "${{env.plugin_version}}" '{exitcode: 0, plugin: $p, version: $v, plugin_version: $pv}')
           echo $json > ${{ env.artifact_name }}.json
           echo $json
 
