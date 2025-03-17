@@ -47,7 +47,7 @@ jobs:
         run: |
           set +e
           mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
-          echo "exitcode=$?" >> $GITHUB_OUTPUT
+          echo "exitcode=$?" >> $GITHUB_ENV
 
       - name: Create artifact name
         run: |
