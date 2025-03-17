@@ -73,4 +73,4 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-      - run: echo $(jq -s *.json) >> $GITHUB_STEP_SUMMARY
+      - run: echo $(jq -s 'flatten' *.json) >> $GITHUB_STEP_SUMMARY
