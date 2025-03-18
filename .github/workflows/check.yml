@@ -52,7 +52,7 @@ jobs:
               mvn versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}} -q
               mvn clean verify -U -DskipTests -Denforcer.skip -q
               exitcode=$?
-              echo "$exitcode,${{matrix.plugin}},${{matrix.version}},$plugin_version" >> ../${{ env.artifact_name }}.csv
+              echo "$exitcode,${{matrix.plugin}},${{matrix.version}},$plugin_version,$jdplus_version" >> ../${{ env.artifact_name }}.csv
               mvn clean -q
               git restore .
             fi

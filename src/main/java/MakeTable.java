@@ -1,3 +1,5 @@
+import org.semver4j.Semver;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,11 +37,11 @@ public class MakeTable {
                 .collect(toCollection(TreeSet::new));
 
         List<Header> columns = versions.stream()
-                .map(version -> new Header(null, new Version(version, "v")))
+                .map(version -> new Header(null, Semver.parse(version)))
                 .toList();
 
         List<Header> rows = plugins.entrySet().stream()
-                .flatMap(entry -> entry.getValue().keySet().stream().map(x -> new Header(entry.getKey(), new Version(x, "v"))))
+                .flatMap(entry -> entry.getValue().keySet().stream().map(x -> new Header(entry.getKey(), Semver.parse(x))))
                 .toList();
 
         int[][] body = plugins.values().stream()
@@ -51,22 +53,22 @@ public class MakeTable {
 
     private static void printMarkdown(List<Header> rows, List<Header> columns, int[][] body) {
         int col0 = rows.stream().map(Header::uri).map(MakeTable::getShortPluginName).mapToInt(String::length).max().orElse(0);
-        int col1 = rows.stream().map(Header::version).map(Version::toString).mapToInt(String::length).max().orElse(0);
+        int col1 = rows.stream().map(Header::toVersionString).mapToInt(String::length).max().orElse(0);
         int[] sizes = IntStream.concat(
                 IntStream.of(col0, col1),
-                columns.stream().map(Header::version).map(Version::toString).mapToInt(String::length)
+                columns.stream().map(Header::toVersionString).mapToInt(String::length)
         ).toArray();
 
         Collector<CharSequence, ?, String> toRow = joining(" | ", "| ", " |");
 
-        System.out.println(Stream.concat(Stream.of(" ".repeat(sizes[0]), " ".repeat(sizes[1])), columns.stream().map(Header::version).map(Version::toString)).collect(toRow));
+        System.out.println(Stream.concat(Stream.of(" ".repeat(sizes[0]), " ".repeat(sizes[1])), columns.stream().map(Header::toVersionString)).collect(toRow));
         System.out.println(IntStream.range(0, 2 + columns.size()).mapToObj(i -> "-".repeat(sizes[i])).collect(toRow));
         AtomicReference<String> previous = new AtomicReference<>("");
         IntStream.range(0, rows.size()).forEach(i -> {
             String shortPluginName = getShortPluginName(rows.get(i).uri());
             String label = previous.getAndSet(shortPluginName).equals(shortPluginName) ? "" : shortPluginName;
             System.out.println(Stream.concat(
-                    Stream.of(padRight(label, sizes[0]), padRight(rows.get(i).version().toString(), sizes[1])),
+                    Stream.of(padRight(label, sizes[0]), padRight(rows.get(i).toVersionString(), sizes[1])),
                     IntStream.range(0, body[i].length).mapToObj(j -> padRight(emoji(body[i][j]), sizes[j + 2]))
             ).collect(toRow));
         });
@@ -108,13 +110,10 @@ public class MakeTable {
         }
     }
 
-    private record Header(URI uri, Version version) {
-    }
+    private record Header(URI uri, Semver version) {
 
-    private record Version(String version, String prefix) {
-        @Override
-        public String toString() {
-            return prefix + version;
+        String toVersionString() {
+            return "v" + version.toString();
         }
     }
 
