@@ -21,9 +21,9 @@ import static java.util.stream.Collectors.*;
 public class MakeTable {
 
     public static void main(String[] args) throws IOException {
-        List<Item> extracted = args.length == 1 ? Item.parse(Path.of(args[0])) : Item.extract();
+        List<Item> extracted = filter(args.length == 1 ? Item.parse(Path.of(args[0])) : Item.extract());
 
-        Map<URI, Map<String, Map<String, Integer>>> plugins = extracted
+        Map<URI, Map<Semver, Map<Semver, Integer>>> plugins = extracted
                 .stream()
                 .collect(
                         groupingBy(Item::getPluginURI, TreeMap::new,
@@ -31,28 +31,28 @@ public class MakeTable {
                                         toMap(Item::version, Item::exitcode)))
                 );
 
-        SortedSet<String> versions = extracted
+        SortedSet<Semver> versions = extracted
                 .stream()
                 .map(Item::version)
                 .collect(toCollection(TreeSet::new));
 
         List<Header> columns = versions.stream()
-                .map(version -> new Header(null, Semver.parse(version)))
+                .map(version -> new Header(null, version))
                 .toList();
 
         List<Header> rows = plugins.entrySet().stream()
-                .flatMap(entry -> entry.getValue().keySet().stream().map(x -> new Header(entry.getKey(), Semver.parse(x))))
+                .flatMap(entry -> entry.getValue().keySet().stream().map(x -> new Header(entry.getKey(), x)))
                 .toList();
 
         int[][] body = plugins.values().stream()
-                .flatMap(reports -> reports.values().stream().map(report -> versions.stream().mapToInt(report::get).toArray()))
+                .flatMap(reports -> reports.values().stream().map(report -> versions.stream().map(report::get).mapToInt(value -> value != null ? value : -1).toArray()))
                 .toArray(int[][]::new);
 
         printMarkdown(rows, columns, body);
     }
 
     private static void printMarkdown(List<Header> rows, List<Header> columns, int[][] body) {
-        int col0 = rows.stream().map(Header::uri).map(MakeTable::getShortPluginName).mapToInt(String::length).max().orElse(0);
+        int col0 = rows.stream().map(Header::toShortPluginName).mapToInt(String::length).max().orElse(0);
         int col1 = rows.stream().map(Header::toVersionString).mapToInt(String::length).max().orElse(0);
         int[] sizes = IntStream.concat(
                 IntStream.of(col0, col1),
@@ -65,7 +65,7 @@ public class MakeTable {
         System.out.println(IntStream.range(0, 2 + columns.size()).mapToObj(i -> "-".repeat(sizes[i])).collect(toRow));
         AtomicReference<String> previous = new AtomicReference<>("");
         IntStream.range(0, rows.size()).forEach(i -> {
-            String shortPluginName = getShortPluginName(rows.get(i).uri());
+            String shortPluginName = rows.get(i).toShortPluginName();
             String label = previous.getAndSet(shortPluginName).equals(shortPluginName) ? "" : shortPluginName;
             System.out.println(Stream.concat(
                     Stream.of(padRight(label, sizes[0]), padRight(rows.get(i).toVersionString(), sizes[1])),
@@ -78,15 +78,16 @@ public class MakeTable {
         return switch (exitcode) {
             case 0 -> "✅";
             case 1 -> "❌";
+            case -1 -> "";
             default -> "❓";
         };
     }
 
-    private record Item(int exitcode, String plugin, String version, String plugin_version) {
+    private record Item(int exitcode, String plugin, Semver version, Semver plugin_version, Semver jdplus_version) {
 
         static Item parse(String line) {
             String[] array = line.split(",", -1);
-            return new Item(Integer.parseInt(array[0]), array[1], array[2], array[3]);
+            return new Item(Integer.parseInt(array[0]), array[1], new Semver(array[2]), new Semver(array[3]), new Semver(array[4]));
         }
 
         URI getPluginURI() {
@@ -115,18 +116,23 @@ public class MakeTable {
         String toVersionString() {
             return "v" + version.toString();
         }
-    }
 
-    private static String getShortPluginName(URI plugin) {
-        String text = plugin.toString();
-        return text.substring(text.lastIndexOf("/") + 1).replace("jdplus-", "");
-    }
-
-    private static String toBlank(String text) {
-        return text.isBlank() ? text : " ".repeat(text.length());
+        String toShortPluginName() {
+            String text = uri().toString();
+            return text.substring(text.lastIndexOf("/") + 1).replace("jdplus-", "");
+        }
     }
 
     private static String padRight(String text, int size) {
         return text.length() >= size ? text : text + " ".repeat(size - text.length());
+    }
+
+    private static List<Item> filter(List<Item> items) {
+        return items.stream().filter(MakeTable::isValid).toList();
+    }
+
+    private static boolean isValid(Item item) {
+        return item.plugin_version().isStable()
+                && item.version().isGreaterThanOrEqualTo(item.jdplus_version());
     }
 }
