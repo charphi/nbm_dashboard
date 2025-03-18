@@ -15,12 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         plugin:
-          #          - 'jdemetra/jdplus-benchmarking'
+          - 'jdemetra/jdplus-benchmarking'
           - 'jdemetra/jdplus-incubator'
-        #          - 'jdemetra/jdplus-experimental'
-        #          - 'jdemetra/jdplus-revisions'
-        #          - 'jdemetra/jdplus-nowcasting'
-        #          - 'nbbrd/jdplus-sdmx'
+          - 'jdemetra/jdplus-experimental'
+          - 'jdemetra/jdplus-revisions'
+          - 'jdemetra/jdplus-nowcasting'
+          - 'nbbrd/jdplus-sdmx'
         version: [ 3.2.4, 3.3.0, 3.4.0, 3.4.1-SNAPSHOT ]
 
     name: ${{matrix.plugin}}@${{matrix.version}}

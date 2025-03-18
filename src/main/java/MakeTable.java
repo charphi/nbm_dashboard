@@ -27,7 +27,7 @@ public class MakeTable {
         System.out.println(versions.stream().map(version -> "v" + version).collect(joining(" | ", "| | ", " |")));
         System.out.println("| " + IntStream.range(0, versions.size() + 1).mapToObj(i -> "---").collect(Collectors.joining(" | ")) + " |");
         plugins.forEach((plugin, reports) -> {
-            System.out.print("| " + plugin.pluginName() + " v" + plugin.pluginVersion());
+            System.out.print("| " + plugin.getShortPluginName() + " v" + plugin.pluginVersion());
             versions.stream()
                     .map(version -> reports.stream().filter(z -> z.appVersion().equals(version)).findFirst().map(PluginReport::exitcode).orElse(-1))
                     .map(MakeTable::emoji)
@@ -70,6 +70,9 @@ public class MakeTable {
             return new PluginId(item.plugin(), item.plugin_version());
         }
 
+        public String getShortPluginName() {
+            return pluginName().substring(pluginName().indexOf("/") + 1);
+        }
 
         @Override
         public int compareTo(PluginId o) {
