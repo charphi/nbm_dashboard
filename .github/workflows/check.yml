@@ -55,7 +55,7 @@ jobs:
 
       - name: Create report
         run: |
-          echo "${{env.exitcode,${{matrix.plugin}},${{matrix.version}},${{env.plugin_version}}}}" > ${{ env.artifact_name }}.csv
+          echo "${{env.exitcode}},${{matrix.plugin}},${{matrix.version}},${{env.plugin_version}}" > ${{ env.artifact_name }}.csv
           cat ${{ env.artifact_name }}.csv
 
       - name: Upload report
