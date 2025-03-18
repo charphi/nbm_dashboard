@@ -47,7 +47,7 @@ jobs:
           set +e
           mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
           exitcode=$?
-          echo "${{env.exitcode}},${{matrix.plugin}},${{matrix.version}},${{env.plugin_version}}" > ${{ env.artifact_name }}.csv
+          echo "$exitcode,${{matrix.plugin}},${{matrix.version}},$plugin_version" > ${{ env.artifact_name }}.csv
 
       - name: Print report
         run: cat ${{ env.artifact_name }}.csv
