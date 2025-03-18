@@ -15,12 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         plugin:
-#          - 'jdemetra/jdplus-benchmarking'
+          #          - 'jdemetra/jdplus-benchmarking'
           - 'jdemetra/jdplus-incubator'
-#          - 'jdemetra/jdplus-experimental'
-#          - 'jdemetra/jdplus-revisions'
-#          - 'jdemetra/jdplus-nowcasting'
-#          - 'nbbrd/jdplus-sdmx'
+        #          - 'jdemetra/jdplus-experimental'
+        #          - 'jdemetra/jdplus-revisions'
+        #          - 'jdemetra/jdplus-nowcasting'
+        #          - 'nbbrd/jdplus-sdmx'
         version: [ 3.2.4, 3.3.0, 3.4.0, 3.4.1-SNAPSHOT ]
 
     name: ${{matrix.plugin}}@${{matrix.version}}
@@ -41,6 +41,7 @@ jobs:
       - name: Setup and run compilation to create report
         run: |
           git clone https://github.com/${{matrix.plugin}} plugin -b main --single-branch
+          for i in $(git tag); do echo $i; done
           plugin_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=project.version -q -DforceStdout)
           jdplus_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout)
           mvn -f plugin/pom.xml versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
