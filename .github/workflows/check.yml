@@ -48,7 +48,7 @@ jobs:
             git checkout $i
             plugin_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
             jdplus_version=$(mvn help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout)
-            if ! printf '${{matrix.version}}\n$jdplus_version\n' | sort -V -C; then
+            if ! printf '$jdplus_version\n${{matrix.version}}\n' | sort -V -C; then
               mvn versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}} -q
               mvn clean verify -U -DskipTests -Denforcer.skip -q
               exitcode=$?
