@@ -61,17 +61,28 @@ public class MakeTable {
 
         Collector<CharSequence, ?, String> toRow = joining(" | ", "| ", " |");
 
+        Map<URI, Optional<Semver>> max = rows.stream().collect(groupingBy(Header::uri, mapping(Header::version, reducing((l, r) -> l.isGreaterThan(r) ? l : r))));
+
         System.out.println(Stream.concat(Stream.of(" ".repeat(sizes[0]), " ".repeat(sizes[1])), columns.stream().map(Header::toVersionString)).collect(toRow));
         System.out.println(IntStream.range(0, 2 + columns.size()).mapToObj(i -> "-".repeat(sizes[i])).collect(toRow));
         AtomicReference<String> previous = new AtomicReference<>("");
         IntStream.range(0, rows.size()).forEach(i -> {
             String shortPluginName = rows.get(i).toShortPluginName();
             String label = previous.getAndSet(shortPluginName).equals(shortPluginName) ? "" : shortPluginName;
+            String versionString = rows.get(i).toVersionString();
+            boolean important = max.get(rows.get(i).uri()).orElse(Semver.ZERO).isEqualTo(versionString.substring(1));
+            if (important) {
+                versionString = "**" + versionString + "**";
+            }
             System.out.println(Stream.concat(
-                    Stream.of(padRight(label, sizes[0]), padRight(rows.get(i).toVersionString(), sizes[1])),
-                    IntStream.range(0, body[i].length).mapToObj(j -> padRight(emoji(body[i][j]), sizes[j + 2]))
+                    Stream.of(padRight(label, sizes[0]), padRight(versionString, sizes[1])),
+                    IntStream.range(0, body[i].length).mapToObj(j -> padRight(emoji(correctExitCode(body[i][j], important)), sizes[j + 2]))
             ).collect(toRow));
         });
+    }
+
+    private static int correctExitCode(int exitcode, boolean important) {
+        return exitcode == 1 && important ? -2 : exitcode;
     }
 
     private static String emoji(int exitcode) {
@@ -79,6 +90,7 @@ public class MakeTable {
             case 0 -> "✅";
             case 1 -> "❌";
             case -1 -> "";
+            case -2 -> "🔥";
             default -> "❓";
         };
     }
