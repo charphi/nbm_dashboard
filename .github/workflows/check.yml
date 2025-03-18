@@ -49,10 +49,11 @@ jobs:
             plugin_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
             jdplus_version=$(mvn help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout)
             mvn versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
-            mvn clean verify -U -DskipTests -Denforcer.skip
+            mvn clean verify -U -DskipTests -Denforcer.skip -q
             exitcode=$?
             echo "$exitcode,${{matrix.plugin}},${{matrix.version}},$plugin_version" >> ../${{ env.artifact_name }}.csv
-            mvn clean
+            mvn clean -q
+            git restore .
           done
           set -e
           popd
