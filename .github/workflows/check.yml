@@ -15,12 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         plugin:
-          - 'jdemetra/jdplus-benchmarking'
+#          - 'jdemetra/jdplus-benchmarking'
           - 'jdemetra/jdplus-incubator'
-          - 'jdemetra/jdplus-experimental'
-          - 'jdemetra/jdplus-revisions'
-          - 'jdemetra/jdplus-nowcasting'
-          - 'nbbrd/jdplus-sdmx'
+#          - 'jdemetra/jdplus-experimental'
+#          - 'jdemetra/jdplus-revisions'
+#          - 'jdemetra/jdplus-nowcasting'
+#          - 'nbbrd/jdplus-sdmx'
         version: [ 3.2.4, 3.3.0, 3.4.0, 3.4.1-SNAPSHOT ]
 
     name: ${{matrix.plugin}}@${{matrix.version}}
@@ -48,12 +48,14 @@ jobs:
             git checkout $i
             plugin_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
             jdplus_version=$(mvn help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout)
-            mvn versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
-            mvn clean verify -U -DskipTests -Denforcer.skip -q
-            exitcode=$?
-            echo "$exitcode,${{matrix.plugin}},${{matrix.version}},$plugin_version" >> ../${{ env.artifact_name }}.csv
-            mvn clean -q
-            git restore .
+            if ! printf '${{matrix.version}}\n$jdplus_version\n' | sort -V -C; then
+              mvn versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}} -q
+              mvn clean verify -U -DskipTests -Denforcer.skip -q
+              exitcode=$?
+              echo "$exitcode,${{matrix.plugin}},${{matrix.version}},$plugin_version" >> ../${{ env.artifact_name }}.csv
+              mvn clean -q
+              git restore .
+            fi
           done
           set -e
           popd
@@ -78,7 +80,7 @@ jobs:
           checkout-fetch-depth: 0
           java-version: 17
 
-      - name: Download report
+      - name: Download reports
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
@@ -89,3 +91,8 @@ jobs:
         run: mvn clean install
 
       - run: java -jar target/nbm_dashboard-1.0.0-SNAPSHOT-bin.jar data.csv > $GITHUB_STEP_SUMMARY
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          path: data.csv
