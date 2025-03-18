@@ -43,7 +43,10 @@ jobs:
           git clone https://github.com/${{matrix.plugin}} plugin -b main
           pushd plugin
           echo ">>>"
-          for i in $(git tag); do echo $i; done
+          for i in $(git tag)
+          do 
+            echo $i
+          done
           echo "<<<"
           plugin_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           jdplus_version=$(mvn help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout)
