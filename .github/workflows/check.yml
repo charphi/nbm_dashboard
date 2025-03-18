@@ -80,7 +80,7 @@ jobs:
         with:
           merge-multiple: true
 
-      - run: cat *.csv > data.cv
+      - run: cat *.csv > data.csv
 
       - name: Generate summary
         run: mvn clean install
