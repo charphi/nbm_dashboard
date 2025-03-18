@@ -15,12 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         plugin:
-          - 'jdemetra/jdplus-benchmarking'
+#          - 'jdemetra/jdplus-benchmarking'
           - 'jdemetra/jdplus-incubator'
-          - 'jdemetra/jdplus-experimental'
-          - 'jdemetra/jdplus-revisions'
-          - 'jdemetra/jdplus-nowcasting'
-          - 'nbbrd/jdplus-sdmx'
+#          - 'jdemetra/jdplus-experimental'
+#          - 'jdemetra/jdplus-revisions'
+#          - 'jdemetra/jdplus-nowcasting'
+#          - 'nbbrd/jdplus-sdmx'
         version: [ 3.2.4, 3.3.0, 3.4.0, 3.4.1-SNAPSHOT ]
 
     name: ${{matrix.plugin}}@${{matrix.version}}
@@ -55,15 +55,14 @@ jobs:
 
       - name: Create report
         run: |
-          json=$(jq -n --arg e "${{env.exitcode}}" --arg p "${{matrix.plugin}}" --arg v "${{matrix.version}}" --arg pv "${{env.plugin_version}}" '{exitcode: $e, plugin: $p, version: $v, plugin_version: $pv}')
-          echo $json > ${{ env.artifact_name }}.json
-          echo $json
+          echo "${{env.exitcode,${{matrix.plugin}},${{matrix.version}},${{env.plugin_version}}}}" > ${{ env.artifact_name }}.csv
+          cat ${{ env.artifact_name }}.csv
 
       - name: Upload report
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.artifact_name }}
-          path: ${{ env.artifact_name }}.json
+          path: ${{ env.artifact_name }}.csv
 
   gen-summary-job:
     runs-on: ubuntu-latest
@@ -76,14 +75,14 @@ jobs:
           checkout-fetch-depth: 0
           java-version: 17
 
-      - name: Download JSON artifact
+      - name: Download report
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
 
-      - run: echo $(jq -s 'flatten' *.json) > data.json
+      - run: cat *.csv > data.cv
 
       - name: Generate summary
         run: mvn clean install
 
-      - run: java -jar target/nbm_dashboard-1.0.0-SNAPSHOT-bin.jar data.json > $GITHUB_STEP_SUMMARY
+      - run: java -jar target/nbm_dashboard-1.0.0-SNAPSHOT-bin.jar data.csv > $GITHUB_STEP_SUMMARY
