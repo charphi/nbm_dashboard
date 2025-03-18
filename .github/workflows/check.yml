@@ -40,13 +40,15 @@ jobs:
 
       - name: Setup and run compilation to create report
         run: |
-          git clone https://github.com/${{matrix.plugin}} plugin -b main --single-branch
+          git clone https://github.com/${{matrix.plugin}} plugin -b main
+          echo ">>>"
           for i in $(git tag); do echo $i; done
+          echo "<<<"
           plugin_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=project.version -q -DforceStdout)
           jdplus_version=$(mvn -f plugin/pom.xml  help:evaluate -Dexpression=jdplus-main.version -q -DforceStdout)
           mvn -f plugin/pom.xml versions:set-property -Dproperty=jdplus-main.version -DnewVersion=${{matrix.version}}
           set +e
-          mvn -f plugin/pom.xml clean install -U -DskipTests -Denforcer.skip
+          mvn -f plugin/pom.xml clean verify -U -DskipTests -Denforcer.skip
           exitcode=$?
           echo "$exitcode,${{matrix.plugin}},${{matrix.version}},$plugin_version" > ${{ env.artifact_name }}.csv
 
