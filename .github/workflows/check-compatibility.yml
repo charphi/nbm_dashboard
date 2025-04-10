@@ -43,7 +43,8 @@ jobs:
         run: |
           mvn -U com.github.nbbrd.nbbrd-maven-tools:compatibility-maven-plugin:1.0.0-SNAPSHOT::check-downstream `
             -"Dcompatibility.source=https://github.com/jdemetra/jdplus-main" `
-            -"Dcompatibility.targets=${{matrix.plugin}}" `
+            -"Dcompatibility.source.limit=2" `
+            -"Dcompatibility.targets=https://github.com/${{matrix.plugin}}" `
             -"Dcompatibility.property=jdplus-main.version" `
             -"Dcompatibility.target.limit=2" `
             -"Dcompatibility.report.file=${{env.artifact_name}}.md"
