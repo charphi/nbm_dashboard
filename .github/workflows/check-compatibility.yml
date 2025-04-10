@@ -32,6 +32,8 @@ jobs:
           checkout-submodules: true
           checkout-fetch-depth: 0
           java-version: 17
+          settings-repositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
+          settings-pluginRepositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
 
       - name: Create artifact name
         run: |
@@ -44,8 +46,7 @@ jobs:
             -Dcompatibility.targets=${{matrix.plugin}} `
             -Dcompatibility.property=jdplus-main.version `
             -Dcompatibility.target.limit=2 `
-            -Dcompatibility.report.file=${{env.artifact_name}}.md `
-            -Dmaven.repo.url=https://repo.maven.apache.org/maven2,https://s01.oss.sonatype.org/content/repositories/snapshots/
+            -Dcompatibility.report.file=${{env.artifact_name}}.md
 
       - name: Print report
         run: cat ${{env.artifact_name}}.md
