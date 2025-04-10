@@ -47,7 +47,8 @@ jobs:
             -"Dcompatibility.targets=https://github.com/${{matrix.plugin}}" `
             -"Dcompatibility.property=jdplus-main.version" `
             -"Dcompatibility.target.limit=2" `
-            -"Dcompatibility.report.file=${{env.artifact_name}}.md"
+            -"Dcompatibility.report.file=${{env.artifact_name}}.md" `
+            -"Dcompatibility.working.dir=$pwd"
 
       - name: Print report
         run: cat ${{env.artifact_name}}.md
