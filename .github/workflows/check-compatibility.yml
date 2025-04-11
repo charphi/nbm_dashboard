@@ -1,4 +1,4 @@
-name: Check main on JD+ develop
+name: Check compatibility plugin
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
           - 'nbbrd/jdplus-sdmx'
 
     name: ${{matrix.plugin}}
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout and Setup Maven
@@ -36,19 +36,18 @@ jobs:
           settings-pluginRepositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
 
       - name: Create artifact name
-        run: |
-          echo "artifact_name=$(echo ${{matrix.plugin}} | tr "/" "_")" >> $GITHUB_ENV
+        run: echo "artifact_name=$(echo ${{matrix.plugin}} | tr "/" "_")" >> $GITHUB_ENV
 
-      - name: Setup and run compilation to create report
+      - name: Check compatibility and create report
         run: |
-          mvn -U com.github.nbbrd.nbbrd-maven-tools:compatibility-maven-plugin:1.0.0-SNAPSHOT::check-downstream `
-            -"Dcompatibility.source=https://github.com/jdemetra/jdplus-main" `
-            -"Dcompatibility.source.limit=2" `
-            -"Dcompatibility.targets=https://github.com/${{matrix.plugin}}" `
-            -"Dcompatibility.property=jdplus-main.version" `
-            -"Dcompatibility.target.limit=2" `
-            -"Dcompatibility.report.file=${{env.artifact_name}}.md" `
-            -"Dcompatibility.working.dir=$pwd"
+          mvn -U com.github.nbbrd.nbbrd-maven-tools:compatibility-maven-plugin:1.0.0-SNAPSHOT::check-downstream \
+            -Dcompatibility.source=https://github.com/jdemetra/jdplus-main \
+            -Dcompatibility.source.limit=2 \
+            -Dcompatibility.targets=https://github.com/${{matrix.plugin}} \
+            -Dcompatibility.property=jdplus-main.version \
+            -Dcompatibility.target.limit=2 \
+            -Dcompatibility.report.file=${{env.artifact_name}}.md \
+            -Dcompatibility.working.dir=$PWD
 
       - name: Print report
         run: cat ${{env.artifact_name}}.md
