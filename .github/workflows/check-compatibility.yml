@@ -32,7 +32,7 @@ jobs:
           checkout-submodules: true
           checkout-fetch-depth: 0
           java-version: 17
-          settings-repositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
+          settings-pluginRepositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
 
       - name: Create artifact name
         run: echo "artifact_name=$(echo ${{matrix.plugin}} | tr "/" "_")" >> $GITHUB_ENV
