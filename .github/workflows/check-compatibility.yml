@@ -2,9 +2,9 @@ name: Check compatibility plugin
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+#  push:
+#    branches:
+#      - main
 
 env:
   MAVEN_ARGS: "-B -ntp"
