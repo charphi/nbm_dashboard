@@ -78,4 +78,4 @@ jobs:
             -D"compatibility.report.file=report.md"
 
       - name: Generate summary
-        run: cat report > $GITHUB_STEP_SUMMARY
+        run: cat report.md > $GITHUB_STEP_SUMMARY
