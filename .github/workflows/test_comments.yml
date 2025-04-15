@@ -16,6 +16,7 @@ jobs:
           checkout-submodules: true
           checkout-fetch-depth: 0
           java-version: 17
+          settings-pluginRepositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
 
       - name: Check compatibility
         run: mvn -U validate -P check-downstream
