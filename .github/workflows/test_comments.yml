@@ -25,15 +25,17 @@ jobs:
         run: cat target/compatibility.md > $GITHUB_STEP_SUMMARY
 
       - name: Print report
-        run: echo "$GITHUB_STEP_SUMMARY"
+        run: cat $GITHUB_STEP_SUMMARY
 
+      - run: npm install fs
       - uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs')
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '👋 Thanks for reporting! \n $GITHUB_STEP_SUMMARY'
+              body: fs.readFileSync('target/compatibility.md', 'utf8')
             })
             
