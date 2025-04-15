@@ -22,7 +22,7 @@ jobs:
 
       - name: Read report
         run: |
-          ABC=`cat target/compatibility.md`
+          cat target/compatibility.md >> $ABC
           echo "REPORT=$ABC" >> $GITHUB_ENV
 
       - name: Print report
