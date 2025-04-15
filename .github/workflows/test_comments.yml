@@ -7,6 +7,20 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - name: Checkout and Setup Maven
+        uses: s4u/setup-maven-action@v1.18.0
+        with:
+          checkout-submodules: true
+          checkout-fetch-depth: 0
+          java-version: 17
+          settings-pluginRepositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
+
+      - name: Check compatibility
+        run: mvn validate -P check-downstream
+
+      - name: Print report
+        run: echo "report=$(cat target/compatibility.md)" >> $GITHUB_ENV
+
       - uses: actions/github-script@v7
         with:
           script: |
@@ -14,6 +28,6 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '👋 Thanks for reporting!'
+              body: '👋 Thanks for reporting! \n ${{env.report}}'
             })
             
