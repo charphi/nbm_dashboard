@@ -18,10 +18,12 @@ jobs:
           java-version: 17
 
       - name: Check compatibility
-        run: mvn validate -P check-downstream
+        run: mvn -U validate -P check-downstream
 
       - name: Read report
-        run: echo "REPORT=$(cat ./target/compatibility.md)" >> $GITHUB_ENV
+        run: |
+          ABC=$(cat ./target/compatibility.md)
+          echo "REPORT=$ABC" >> $GITHUB_ENV
 
       - name: Print report
         run: echo "${{env.REPORT}}"
