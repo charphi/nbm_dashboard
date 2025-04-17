@@ -45,7 +45,7 @@
                         <artifactId>maven-scm-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>validate</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>checkout</goal>
                                 </goals>
@@ -63,7 +63,7 @@
                         <artifactId>compatibility-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>validate</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>check-downstream</goal>
                                 </goals>
@@ -91,7 +91,7 @@
                         <artifactId>maven-scm-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>validate</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>checkout</goal>
                                 </goals>
@@ -109,7 +109,7 @@
                         <artifactId>compatibility-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>validate</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>check-upstream</goal>
                                 </goals>
