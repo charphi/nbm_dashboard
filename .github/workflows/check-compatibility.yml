@@ -39,7 +39,7 @@ jobs:
         id: notification
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          body: "⚠️ Checking compatibility on this PR (Median duration: ${{steps.predict_run_time.outputs.succeed_median_time}}min) ⚠️"
+          body: "⚠️ Checking compatibility on this PR (median duration: ${{steps.predict_run_time.outputs.succeed_median_time}}min) ⚠️"
 
       - if: ${{ hashFiles('continue') != '' }}
         name: Check compatibility on PR
