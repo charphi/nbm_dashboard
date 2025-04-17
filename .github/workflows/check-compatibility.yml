@@ -14,11 +14,10 @@ jobs:
     steps:
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v4
+        id: first-comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ⚠️ Checking compatibility on this PR ⚠️
-          reactions: rocket
+          body: ⚠️ Checking compatibility on this PR ⚠️
 
       - name: Checkout and Setup Maven
         uses: s4u/setup-maven-action@v1.18.0
@@ -34,8 +33,6 @@ jobs:
       - name: Add report to comment
         uses: peter-evans/create-or-update-comment@v4
         with:
-          comment-id: ${{ steps.couc.outputs.comment-id }}
+          comment-id: ${{ steps.first-comment.outputs.comment-id }}
           body-path: 'target/compatibility.md'
           edit-mode: replace
-          reactions: hooray
-
