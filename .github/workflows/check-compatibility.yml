@@ -30,7 +30,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ github.repository_owner }}
-          repository: ${{ github.repository_owner }}
+          repository: ${{ github.event.repository.name }}
           workflow-file-name: "check-compatibility.yml"
 
       - if: ${{ hashFiles('continue') != '' }}
