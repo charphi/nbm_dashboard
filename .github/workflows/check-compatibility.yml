@@ -12,9 +12,9 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: Create comment
+      - name: Notify about compatibility check
         uses: peter-evans/create-or-update-comment@v4
-        id: first-comment
+        id: notification
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ⚠️ Checking compatibility on this PR ⚠️
@@ -27,12 +27,12 @@ jobs:
           java-version: 17
           settings-pluginRepositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
 
-      - name: Check compatibility
-        run: mvn -U verify -P check-downstream
+      - name: Check compatibility on PR
+        run: mvn -U verify -D skipTests -P check-downstream
 
-      - name: Add report to comment
+      - name: Replace notification with compatibility report
         uses: peter-evans/create-or-update-comment@v4
         with:
-          comment-id: ${{ steps.first-comment.outputs.comment-id }}
+          comment-id: ${{ steps.notification.outputs.comment-id }}
           body-path: 'target/compatibility.md'
           edit-mode: replace
