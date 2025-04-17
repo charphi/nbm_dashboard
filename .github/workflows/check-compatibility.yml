@@ -21,22 +21,22 @@ jobs:
           settings-pluginRepositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
 
       - name: Check if profile exists
-        run: mvn help:all-profiles | grep -q "check-downstream" && touch enable-check
+        run: mvn help:all-profiles | grep -q check-downstream && touch continue
 
-      - name: Notify about compatibility check
-        if: ${{ hashFiles('enable-check') != '' }}
+      - if: ${{ hashFiles('continue') != '' }}
+        name: Notify about compatibility check
         uses: peter-evans/create-or-update-comment@v4
         id: notification
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ⚠️ Checking compatibility on this PR ⚠️
 
-      - name: Check compatibility on PR
-        if: ${{ hashFiles('enable-check') != '' }}
+      - if: ${{ hashFiles('continue') != '' }}
+        name: Check compatibility on PR
         run: mvn -U verify -D skipTests -P check-downstream
 
-      - name: Replace notification with compatibility report
-        if: ${{ hashFiles('enable-check') != '' }}
+      - if: ${{ hashFiles('continue') != '' }}
+        name: Replace notification with compatibility report
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.notification.outputs.comment-id }}
