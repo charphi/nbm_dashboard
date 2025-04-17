@@ -12,6 +12,14 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ⚠️ Checking compatibility on this PR ⚠️
+          reactions: rocket
+
       - name: Checkout and Setup Maven
         uses: s4u/setup-maven-action@v1.18.0
         with:
@@ -23,18 +31,11 @@ jobs:
       - name: Check compatibility
         run: mvn -U verify -P check-downstream
 
-      - name: Install fs resource
-        run: npm install fs
-
-      - name: Add report as comment
-        uses: actions/github-script@v7
+      - name: Add report to comment
+        uses: peter-evans/create-or-update-comment@v4
         with:
-          script: |
-            const fs = require('fs')
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: fs.readFileSync('target/compatibility.md', 'utf8')
-            })
-            
+          comment-id: ${{ steps.couc.outputs.comment-id }}
+          body-path: 'target/compatibility.md'
+          edit-mode: replace
+          reactions: hooray
+
