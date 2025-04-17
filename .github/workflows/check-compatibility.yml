@@ -21,16 +21,10 @@ jobs:
           settings-pluginRepositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
 
       - name: Check if profile exists
-        id: profile
-        run: |
-          if mvn help:all-profiles | grep -q "check-downstream"; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else 
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
+        run: mvn help:all-profiles | grep -q "check-downstream" && touch enable-check
 
       - name: Notify about compatibility check
-        if: ${{ steps.profile.outputs.exists == 'true' }}
+        if: ${{ hashFiles('enable-check') != '' }}
         uses: peter-evans/create-or-update-comment@v4
         id: notification
         with:
@@ -38,11 +32,11 @@ jobs:
           body: ⚠️ Checking compatibility on this PR ⚠️
 
       - name: Check compatibility on PR
-        if: ${{ steps.profile.outputs.exists == 'true' }}
+        if: ${{ hashFiles('enable-check') != '' }}
         run: mvn -U verify -D skipTests -P check-downstream
 
       - name: Replace notification with compatibility report
-        if: ${{ steps.profile.outputs.exists == 'true' }}
+        if: ${{ hashFiles('enable-check') != '' }}
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.notification.outputs.comment-id }}
