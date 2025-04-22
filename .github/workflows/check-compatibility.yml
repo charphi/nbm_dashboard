@@ -43,7 +43,7 @@ jobs:
 
       - if: ${{ hashFiles('continue') != '' }}
         name: Check compatibility on PR
-        run: mvn -U verify -D skipTests -P check-compatibility -P compatibility.report.file=$pwd/compatibility.md
+        run: mvn -U verify -D skipTests -P check-compatibility -P compatibility.report.file=$PWD/compatibility.md
 
       - if: ${{ hashFiles('continue') != '' }}
         name: Replace notification with compatibility report
