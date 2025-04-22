@@ -37,7 +37,7 @@
 
     <profiles>
         <profile>
-            <id>check-downstream</id>
+            <id>check-compatibility</id>
             <build>
                 <plugins>
                     <plugin>

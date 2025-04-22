@@ -21,7 +21,7 @@ jobs:
           settings-pluginRepositories: '[{"id":"nbbrd-snapshots","name":"nbbrd-snapshots","url":"https://s01.oss.sonatype.org/content/repositories/snapshots","snapshots":{"enabled":true}}]'
 
       - name: Check if profile exists
-        run: mvn help:all-profiles | grep -q check-downstream && touch continue
+        run: mvn help:all-profiles | grep -q check-compatibility && touch continue
 
       - if: ${{ hashFiles('continue') != '' }}
         name: Predict run time
@@ -43,12 +43,12 @@ jobs:
 
       - if: ${{ hashFiles('continue') != '' }}
         name: Check compatibility on PR
-        run: mvn -U verify -D skipTests -P check-downstream
+        run: mvn -U verify -D skipTests -P check-compatibility -P compatibility.report.file=$pwd/compatibility.md
 
       - if: ${{ hashFiles('continue') != '' }}
         name: Replace notification with compatibility report
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.notification.outputs.comment-id }}
-          body-path: 'target/compatibility.md'
+          body-path: 'compatibility.md'
           edit-mode: replace
