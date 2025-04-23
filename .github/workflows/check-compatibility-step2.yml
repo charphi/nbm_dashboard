@@ -20,6 +20,7 @@ jobs:
         with:
           name: compatibility-report
           run-id: ${{github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Read PR number
         id: pr_number
