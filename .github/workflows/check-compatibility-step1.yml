@@ -33,6 +33,7 @@ jobs:
         name: Upload compatibility report and PR number
         uses: actions/upload-artifact@v4
         with:
+          name: compatibility-report
           path: |
             compatibility.md
             pr_number.txt
