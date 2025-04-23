@@ -7,7 +7,7 @@ env:
   MAVEN_ARGS: "-B -ntp"
 
 jobs:
-  compatibility-check-job:
+  checking-job:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and Setup Maven
