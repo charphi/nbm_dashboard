@@ -1,7 +1,7 @@
-name: Check compatibility
+name: Check compatibility step 1
 
 on:
-  pull_request
+  pull_request:
 
 env:
   MAVEN_ARGS: "-B -ntp"
@@ -9,8 +9,6 @@ env:
 jobs:
   compatibility-check-job:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     steps:
       - name: Checkout and Setup Maven
         uses: s4u/setup-maven-action@v1.18.0
@@ -24,21 +22,17 @@ jobs:
         run: mvn help:all-profiles | grep -q check-compatibility && touch continue
 
       - if: ${{ hashFiles('continue') != '' }}
-        name: Notify about compatibility check
-        uses: peter-evans/create-or-update-comment@v4
-        id: notification
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: "⚠️ Checking compatibility on this PR ⚠️"
-
-      - if: ${{ hashFiles('continue') != '' }}
         name: Check compatibility on PR
         run: mvn -U verify -D skipTests -P check-compatibility -D compatibility.report.file=$PWD/compatibility.md
 
       - if: ${{ hashFiles('continue') != '' }}
-        name: Replace notification with compatibility report
-        uses: peter-evans/create-or-update-comment@v4
+        name: Save PR number
+        run: echo ${{ github.event.number }} > pr_number.txt
+
+      - if: ${{ hashFiles('continue') != '' }}
+        name: Upload compatibility report and PR number
+        uses: actions/upload-artifact@v4
         with:
-          comment-id: ${{ steps.notification.outputs.comment-id }}
-          body-path: 'compatibility.md'
-          edit-mode: replace
+          path: |
+            compatibility.md
+            pr_number.txt
