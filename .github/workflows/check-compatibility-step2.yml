@@ -17,14 +17,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           run-id: ${{github.event.workflow_run.id }}
+          merge-multiple: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - if: ${{ hashFiles('pr_number.txt') != '' }}
+      - name: ❓ Check if artifact content exists
+        run: test ! -f pr_number.txt || touch continue
+
+      - if: ${{ hashFiles('continue') != '' }}
         name: ⚙️ Load PR number
         id: pr_number
         run: echo "number=$(cat pr_number.txt)" >> $GITHUB_OUTPUT
 
-      - if: ${{ hashFiles('pr_number.txt') != '' }}
+      - if: ${{ hashFiles('continue') != '' }}
         name: 🔔 Notify PR with compatibility report
         uses: peter-evans/create-or-update-comment@v4
         with:
